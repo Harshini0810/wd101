@@ -1,24 +1,35 @@
-document.getElementById('Registration Form').addEventListener('submit', function(event) {
-    event.preventDefault();
+document.addEventListener('DOMContentLoaded', function() {
+    loadTableData(); // Load table data from localStorage on page load
 
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const dob = document.getElementById('dob').value;
-    const termsAccepted = document.getElementById('terms').checked;
+    document.getElementById('Registration Form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting the traditional way
 
-    const dobDate = new Date(dob);
-    const today = new Date();
-    const minAge = 18;
-    const maxAge = 55;
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const dob = document.getElementById('dob').value;
+        const termsAccepted = document.getElementById('terms').checked;
 
-    if (isValidDate(dobDate, today, minAge, maxAge)) {
+        if (!isValidEmail(email)) {
+            alert('Invalid email address.');
+            return;
+        }
+
+        // Validate date of birth
+        const dobDate = new Date(dob);
+        const today = new Date();
+        const minAge = 18;
+        const maxAge = 55;
+
+        if (!isValidDate(dobDate, today, minAge, maxAge)) {
+            alert('You must be between 18 and 55 years old.');
+            return;
+        }
+
         addRowToTable(name, email, password, dob, termsAccepted);
-  
-        document.getElementById('registrationForm').reset();
-    } else {
-        alert('You must be between 18 and 55 years old.');
-    }
+        saveDataToLocalStorage(name, email, password, dob, termsAccepted);
+        document.getElementById('Registration Form').reset();
+    });
 });
 
 function isValidDate(dob, today, minAge, maxAge) {
@@ -37,6 +48,11 @@ function isValidDate(dob, today, minAge, maxAge) {
     return age >= minAge && age <= maxAge;
 }
 
+function isValidEmail(email) {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+}
+
 function addRowToTable(name, email, password, dob, termsAccepted) {
     const tableBody = document.querySelector('#dataTable tbody');
     const newRow = tableBody.insertRow();
@@ -46,4 +62,15 @@ function addRowToTable(name, email, password, dob, termsAccepted) {
     newRow.insertCell().textContent = password;
     newRow.insertCell().textContent = dob;
     newRow.insertCell().textContent = termsAccepted ? 'Yes' : 'No';
+}
+
+function saveDataToLocalStorage(name, email, password, dob, termsAccepted) {
+    let data = JSON.parse(localStorage.getItem('formData')) || [];
+    data.push({ name, email, password, dob, termsAccepted });
+    localStorage.setItem('formData', JSON.stringify(data));
+}
+
+function loadTableData() {
+    const data = JSON.parse(localStorage.getItem('formData')) || [];
+    data.forEach(item => addRowToTable(item.name, item.email, item.password, item.dob, item.termsAccepted));
 }
