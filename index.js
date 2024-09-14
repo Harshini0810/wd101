@@ -8,7 +8,7 @@ document.getElementById('Registration form').addEventListener('submit', function
 
     // Validate age
     const age = new Date().getFullYear() - new Date(dob).getFullYear();
-    if (age < =18 || age > 55) {
+    if (age <18 || age > 55) {
         alert('Age must be between 18 and 55.');
         return;
     }
@@ -49,7 +49,7 @@ document.getElementById('clearData').addEventListener('click', function() {
 
     // Clear table
     const table = document.getElementById('entriesBody');
-    while (table.rows.length >=0) {
+    while (table.rows.length >0) {
         table.deleteRow(0);
     }
 });
